@@ -1,9 +1,6 @@
 # Discreetly
 ## About Discreetly
-Discreetly is an anonymous and federated chat application.
-
-Under the hood it uses a zero-knowledge protocol called RLN (Rate-Limiting Nullifier) to rate limit messages per user.
-
+Discreetly is an anonymous and federated chat application. Under the hood it uses a zero-knowledge protocol called RLN (Rate-Limiting Nullifier) to rate limit messages per user.
 Read more about [RLN](https://rate-limiting-nullifier.github.io/rln-docs/).
 
 ## Features 
@@ -15,11 +12,3 @@ Read more about [RLN](https://rate-limiting-nullifier.github.io/rln-docs/).
   * Run your own server, and use the same frontend as everyone else, or run your own frontend too.
 * Spammers are banned
   * If someone tries to send messages faster than the rate limit allowed, they are automatically banned, and there is no unban.
-
-## Stack
-### [Frontend](github.com/Discreetly/frontend)
-* Svelte
-* Socketio
-### [Server](github.com/Discreetly/server)
-* Express
-* Socketio
