@@ -10,3 +10,129 @@ Read more about [RLN](https://rate-limiting-nullifier.github.io/rln-docs/).
   * Run your own server, and use the same frontend as everyone else, or run your own frontend too.
 * Spammers are banned
   * If someone tries to send messages faster than the rate limit allowed, they are automatically banned, and there is no unban.
+
+### Getting Started
+
+* Clone the Frontend and Server
+
+**SSH**
+```
+git clone git@github.com:Discreetly/server.git
+git clone git@github.com:Discreetly/frontend.git
+```
+**HTTPS**
+```
+git clone https://github.com/Discreetly/server.git
+git clone https://github.com/Discreetly/frontend.git
+```
+
+**Install Dependencies**
+
+```
+cd Discreetly/server && npm i
+cd Discreetly/frontend && npm i
+```
+
+**Set Server Environment Variables**
+```
+PASSWORD=""
+NODE_ENV="development"
+DATABASE_URL=""
+DATABASE_URL_TEST=""
+THEWORD_ITERATION=""
+DISCORD_PASSWORD=""
+```
+
+* **PASSWORD** and **DISCORD_PASSWORD** are set using express-basic-auth in individual [server routes](https://github.com/Discreetly/server/tree/main/src/endpoints) 
+* **DATABASE_URL** and **DATABASE_URL_TEST** are [MongoDB Atlas](https://www.mongodb.com/) URL's - you can use the same for both or a seperate cluster for testing
+* **[THEWORD_ITERATION](https://github.com/Mach-34/the-word/)** Is used to keep track of what iteration the_word is on for seperate rooms
+
+**Initalize Prisma**
+
+```
+cd Discreetly/server && npx prisma db init && npx prisma db push
+```
+
+**Seed the Database**
+```
+npx prisma db seed
+```
+
+**Run the Frontend and Server**
+```
+cd Discreetly/server && npm run dev
+cd Discreetly/frontend && npm run dev
+```
+
+**Using Discreetly**
+
+The frontend is hosted at ***http://localhost:5173/***
+The server is hosted at ***http://localhost:3001/***
+
+* You'll be presented with this homepage where you can create an identity
+![60e2e37d048c1c3a5d5c2957ef7e6b2f](https://i.imgur.com/GftrVqQ.png)
+
+* Here you can join rooms through different gateways
+  * With invite codes, you can join any rooms if you generate codes for them 
+  * The Alpha Testers room is a general room for the public
+  * Jubmoji's were presented and collected by participants at ZuConnect and DevConnect
+  * Ethereum rooms currently setup are for Beacon Chain Genesis Depositors and Stateful Genesis Funders addresses
+  * [The Word](https://github.com/Mach-34/the-word/)
+![691469a0e9a954d3272cf21919412191](https://i.imgur.com/pcod8Zi.png)
+
+* Chat rooms
+    * Chat rooms have an epoch time (rate limit) and a message limit. Seen in the top right of the chat rooms
+    * Messages are color coded by their SocketIO session ID to help keep track of the flow of conversations
+ ![83b3f422315da5d0c391e4dc99733d7b](https://i.imgur.com/v0OMumd.png)
+
+
+* Creating invite codes for rooms
+    *    Can be generated at **https://localhost:3001/admin/invite** or:
+    *    Replace the Authorization with your Base64-encoded username:password
+```
+curl -i -X POST \
+  http://localhost:3001/admin/addcode \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQ=' \ 
+  -d '{
+    "numCodes": 1, 
+    "rooms": [""], 
+    "all": false, 
+    "expiresAt": 0, 
+    "usesLeft": -1
+}'
+```
+   
+
+* Creating rooms
+    * Can be made at **https://localhost:3001/admin/newroom** or: 
+    * Replace the Authorization with your Base64-encoded username:password
+    * Some parameters in the body are optional
+        * adminIdentities
+        * bandadaAddress
+        * bandadaGroupId
+        * bandadaAPIKey
+        * membershipType
+        * roomId
+        * encrypted
+```
+curl -i -X POST \
+  http://localhost:3001/admin/newroom \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Basic YWRtaW46cGFzc3dvcmQ=' \ 
+  -d '{
+  "roomName": "Test", 
+  "rateLimit": 10000, 
+  "userMessageLimit": 12, 
+  "numClaimCodes": 0, 
+  "approxNumMockUsers": 5, 
+  "type": "IDENTITY_LIST", 
+  "adminIdentities": [""], 
+  "bandadaAddress": "", 
+  "bandadaGroupId": "", 
+  "bandadaAPIKey": "", 
+  "membershipType": "PUBLIC", 
+  "roomId": "", 
+  "encrypted": "" 
+}'
+```
