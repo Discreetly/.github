@@ -11,6 +11,7 @@ Read more about [RLN](https://rate-limiting-nullifier.github.io/rln-docs/).
 * Spammers are banned
   * If someone tries to send messages faster than the rate limit allowed, they are automatically banned, and there is no unban.
 
+
 ### Getting Started
 
 * Clone the Frontend and Server
@@ -39,11 +40,11 @@ PASSWORD=""
 NODE_ENV="development"
 DATABASE_URL=""
 DATABASE_URL_TEST=""
-THEWORD_ITERATION=""
-DISCORD_PASSWORD=""
+THEWORD_ITERATION=''
+DISCORD_PASSWORD=''
 ```
 
-* **PASSWORD** and **DISCORD_PASSWORD** are set using express-basic-auth in individual [server routes](https://github.com/Discreetly/server/tree/main/src/endpoints) 
+* **[PASSWORD](https://github.com/Discreetly/server/blob/a20d26218585a52496eb61ab78d2965235424158/src/endpoints/rooms/rooms.ts#L31C1-L32C1)** and **[DISCORD_PASSWORD](https://github.com/Discreetly/server/blob/a20d26218585a52496eb61ab78d2965235424158/src/endpoints/gateways/discord.ts#L17C1-L21C4)** set the password for express-basic-auth in [server routes](https://github.com/Discreetly/server/tree/main/src/endpoints). The default usernames are admin and discordAdmin. 
 * **DATABASE_URL** and **DATABASE_URL_TEST** are [MongoDB Atlas](https://www.mongodb.com/) URL's - you can use the same for both or a seperate cluster for testing
 * **[THEWORD_ITERATION](https://github.com/Mach-34/the-word/)** Is used to keep track of what iteration the_word is on for seperate rooms
 
@@ -89,6 +90,11 @@ The server is hosted at ***http://localhost:3001/***
 * Creating invite codes for rooms
     *    Can be generated at **https://localhost:3001/admin/invite** or:
     *    Replace the Authorization with your Base64-encoded username:password
+            *    "numCodes" is the amount of codes to create
+            *    "rooms" takes an array of roomId's to create codes for
+            *    "all" is a boolean that will create a code for all rooms if true
+            *    "expiresAt" takes UNIX time to how long until a code expires. If 0 it will expire in 3 months
+            *    "usesLeft" amount of times a code can be used. If -1 it will have unlimited uses
 ```
 curl -i -X POST \
   http://localhost:3001/admin/addcode \
@@ -103,18 +109,24 @@ curl -i -X POST \
 }'
 ```
    
-
 * Creating rooms
     * Can be made at **https://localhost:3001/admin/newroom** or: 
     * Replace the Authorization with your Base64-encoded username:password
-    * Some parameters in the body are optional
-        * adminIdentities
-        * bandadaAddress
-        * bandadaGroupId
-        * bandadaAPIKey
-        * membershipType
-        * roomId
-        * encrypted
+        * "roomName" Name of the room to be created
+        * "rateLimit" Length of an epoch in MS
+        * "userMessageLimit" Number of messages that can be sent in an epoch 
+        * "numClaimCodes" Number of claim codes to create upon room creation
+        * "approxNumMockUsers" Amount of mock users to create for a room
+        * "type" PUBLIC or PRIVATE
+        
+         **Optional Parameters**
+        * "adminIdentities" Admin identities in a room
+        * "bandadaAddress" Bandada Group address
+        * "bandadaGroupId" Bandada Group Id
+        * "bandadaAPIKey" Bandada API Key
+        * "membershipType" IDENTITY_LIST or BANDADA_GROUP
+        * "roomId" Custom Room ID
+        * "encrypted" AES or PLAINTEXT
 ```
 curl -i -X POST \
   http://localhost:3001/admin/newroom \
@@ -126,13 +138,15 @@ curl -i -X POST \
   "userMessageLimit": 12, 
   "numClaimCodes": 0, 
   "approxNumMockUsers": 5, 
-  "type": "IDENTITY_LIST", 
+  "type": "PUBLIC", 
   "adminIdentities": [""], 
   "bandadaAddress": "", 
   "bandadaGroupId": "", 
   "bandadaAPIKey": "", 
-  "membershipType": "PUBLIC", 
+  "membershipType": "IDENTITY_LIST", 
   "roomId": "", 
   "encrypted": "" 
 }'
 ```
+
+
