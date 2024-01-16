@@ -57,7 +57,7 @@ DISCORD_PASSWORD=''
 **Initalize Prisma**
 
 ```
-cd Discreetly/server && npx prisma db init && npx prisma db push
+cd Discreetly/server && npx prisma init && npx prisma db push
 ```
 
 **Seed the Database**
